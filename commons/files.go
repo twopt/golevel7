@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\||$)")
-var hl7FindStartToken = regexp.MustCompile("(MSH\\|\\^\\~\\\\\\&\\||$)")
+var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\|)")
+var hl7FindStartToken = regexp.MustCompile("(MSH\\|\\^\\~\\\\\\&\\|)")
 
 const scanBufferSize = 10 * 1024 * 1024
 
@@ -39,10 +39,22 @@ func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 { // end of file
 	} else {
 		loc := hl7SplitToken.FindIndex(data) // found record delimiter
-		if loc != nil || atEOF {
+		if (loc != nil && len(loc) > 0) || atEOF {
 			nextLoc := hl7FindStartToken.FindIndex(data[1:])
-			hl7RecPatch := []byte(strings.ReplaceAll(string(data[0:loc[0]]), "\r\n", "\r")) // cr/lf found after each segment, patch.
-			return nextLoc[0] + 1, hl7RecPatch, nil
+			if !atEOF && nextLoc == nil { // put more in the buffer
+			} else {
+				if atEOF && len(loc) == 0 {
+					nextLoc = append(loc, len(data)-1)
+				}
+				var hl7String string
+				if len(loc) > 0 {
+					hl7String = string(data[0:loc[0]])
+				} else {
+					hl7String = string(data)
+				}
+				hl7RecPatch := []byte(strings.ReplaceAll(hl7String, "\r\n", "\r"))
+				return nextLoc[0] + 1, hl7RecPatch, nil
+			}
 		}
 	}
 	return advance, token, err // no cr/lf found, either the end or get bigger data and look again
