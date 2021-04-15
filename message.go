@@ -42,7 +42,6 @@ func NewMessage(v []byte) *Message {
 }
 
 func (m *Message) String() string {
-	// var str string
 	str := "-------- Message --------\n"
 	for _, s := range m.Segments {
 		str += s.String()
