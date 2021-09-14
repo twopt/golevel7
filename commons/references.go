@@ -185,4 +185,14 @@ var FieldNames = map[string][]string{
 		"unused",
 		"Prescription Serial Number",
 	},
+	"2PT": []string{
+		"2PT Record",
+		"Legacy Refills Total",
+		"Legacy Qty Remaining",
+		"Legacy Written Qty",
+		"Legacy Last Fill Qty",
+		"Legacy Inactive Flag",
+		"Legacy Transfer Out",
+		"Legacy Void Flag",
+	},
 }
