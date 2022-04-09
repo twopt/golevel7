@@ -2,7 +2,7 @@ package golevel7
 
 import (
 	"bufio"
-	"golevel7/commons"
+	"github.com/twopt/golevel7/commons"
 	"io"
 )
 
