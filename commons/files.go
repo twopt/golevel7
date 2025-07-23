@@ -16,16 +16,16 @@ const scanBufferSize = 10 * 1024 * 1024
 
 // GetHl7Files is a wrapper for GetFiles that returns only hl7 files
 func GetHl7Files() (matches []string, err error) {
-	pattern := "hl7"
+	extension := "hl7"
 
-	matches, err = GetFiles(pattern)
+	matches, err = GetFiles(extension)
 
 	return
 }
 
 // GetFiles finds all files with specified pattern in the current directory and returns the file names as a slice of strings
-func GetFiles(pattern string) (matches []string, err error) {
-	pattern = "*." + pattern
+func GetFiles(extension string) (matches []string, err error) {
+	pattern := "*." + extension
 	pattern = strings.ToLower(pattern) + "|" + strings.ToUpper(pattern)
 	fileCnt := 0
 	fmt.Println("")
