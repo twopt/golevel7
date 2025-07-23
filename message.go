@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"reflect"
 	"strings"
@@ -27,7 +27,11 @@ func NewMessage(v []byte) *Message {
 		if err != nil {
 			return nil
 		}
-		utf8V, err = ioutil.ReadAll(reader)
+		utf8V, err = io.ReadAll(reader)
+		if err != nil {
+			return nil
+		}
+
 	} else {
 		utf8V = v
 	}
@@ -36,7 +40,7 @@ func NewMessage(v []byte) *Message {
 		Delimeters: *NewDelimeters(),
 	}
 	if err := newMessage.parse(); err != nil {
-		log.Fatal(fmt.Sprintf("Parse Error: %+v", err))
+		log.Fatalf("Parse Error: %+v", err)
 	}
 	return newMessage
 }
@@ -186,17 +190,17 @@ func (m *Message) parse() error {
 
 func (m *Message) parseSep() error {
 	if len(m.Value) < 8 {
-		return errors.New("Invalid message length less than 8 bytes")
+		return errors.New("invalid message length less than 8 bytes")
 	}
 	if string(m.Value[:3]) != "MSH" {
-		return fmt.Errorf("Invalid message: Missing MSH segment -> %v", m.Value[:3])
+		return fmt.Errorf("invalid message: Missing MSH segment -> %v", m.Value[:3])
 	}
 
 	r := bytes.NewReader([]byte(string(m.Value)))
 	for i := 0; i < 8; i++ {
 		ch, _, _ := r.ReadRune()
 		if ch == eof {
-			return fmt.Errorf("Invalid message: eof while parsing MSH")
+			return fmt.Errorf("invalid message: eof while parsing MSH")
 		}
 		switch i {
 		case 3:

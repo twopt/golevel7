@@ -2,8 +2,9 @@ package golevel7
 
 import (
 	"fmt"
-	"github.com/twopt/golevel7/commons"
 	"strings"
+
+	"github.com/twopt/golevel7/commons"
 )
 
 // Field is an HL7 field

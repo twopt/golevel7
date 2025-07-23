@@ -19,7 +19,12 @@ func TestAcknowledge(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	mi, err := msgs[0].Info()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	ack := Acknowledge(mi, nil)
 	if ack == nil {
 		t.Fatal("Expected ACK message got nil")

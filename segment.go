@@ -51,7 +51,7 @@ func (s *Segment) isMSH() bool {
 
 func (s *Segment) parse(seps *Delimeters) error {
 	if len(s.Value) < 3 {
-		return fmt.Errorf("Invalid segment. Length %v", len(s.Value))
+		return fmt.Errorf("invalid segment. Length %v", len(s.Value))
 	}
 	isMSH := s.isMSH()
 

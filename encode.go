@@ -29,7 +29,7 @@ func (e *Encoder) Encode(it interface{}) error {
 		return err
 	}
 	if i < len(b) {
-		return errors.New("Failed to write all bytes")
+		return errors.New("failed to write all bytes")
 	}
 	return nil
 }
