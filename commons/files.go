@@ -9,18 +9,28 @@ import (
 	"strings"
 )
 
-var hl7SplitToken = regexp.MustCompile("(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\|)")
-var hl7FindStartToken = regexp.MustCompile("(MSH\\|\\^\\~\\\\\\&\\|)")
+var hl7SplitToken = regexp.MustCompile(`(\\r(\\n|\\x1c)+(\\n\\r)?MSH\\|\\^\\~\\\\\\&\\|)`)
+var hl7FindStartToken = regexp.MustCompile(`(MSH\\|\\^\\~\\\\\\&\\|)`)
 
 const scanBufferSize = 10 * 1024 * 1024
 
-// GetHl7Files finds all hl7 files in the current directory and returns the file names as a slice of strings
+// GetHl7Files is a wrapper for GetFiles that returns only hl7 files
 func GetHl7Files() (matches []string, err error) {
-	pattern := "*.hl7"
+	pattern := "hl7"
+
+	matches, err = GetFiles(pattern)
+
+	return
+}
+
+// GetFiles finds all files with specified pattern in the current directory and returns the file names as a slice of strings
+func GetFiles(pattern string) (matches []string, err error) {
+	pattern = "*." + pattern
+	pattern = strings.ToLower(pattern) + "|" + strings.ToUpper(pattern)
 	fileCnt := 0
 	fmt.Println("")
 	if matches, err = filepath.Glob(pattern); err == nil {
-		for fileCnt, _ = range matches {
+		for fileCnt = range matches {
 			fileCnt++
 			if fileCnt == 1 || fileCnt%1000 == 0 {
 				fmt.Printf("\rfound %v", fileCnt)
@@ -39,7 +49,7 @@ func crLfSplit(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 { // end of file
 	} else {
 		loc := hl7SplitToken.FindIndex(data) // found record delimiter
-		if (loc != nil && len(loc) > 0) || atEOF {
+		if (len(loc) > 0) || atEOF {
 			nextLoc := hl7FindStartToken.FindIndex(data[1:])
 			if !atEOF && nextLoc == nil { // put more in the buffer
 			} else {
