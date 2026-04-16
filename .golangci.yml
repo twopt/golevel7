@@ -36,7 +36,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com/twopt/go835Convert)
+      - prefix(github.com/twopt/golevel7)
       - blank
     skip-generated: true
     custom-order: true
@@ -54,9 +54,9 @@ linters-settings:
     simplify: true
   gofumpt:
     extra-rules: false
-    module-path: github.com/twopt/go835Convert
+    module-path: github.com/twopt/golevel7
   goimports:
-    local-prefixes: github.com/twopt/go835Convert
+    local-prefixes: github.com/twopt/golevel7
   mnd:
     ignored-numbers:
       - '0o755'
