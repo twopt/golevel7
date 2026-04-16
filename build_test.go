@@ -95,11 +95,11 @@ func TestMessageBuilding(t *testing.T) {
 	}
 	msg, err := StartMessage(mi)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Error building start message: %s", err)
 	}
 	am := aMsg{FirstName: "Davin", LastName: "Hills"}
 	_, err = Marshal(msg, &am)
 	if err != nil {
-		t.Error(err)
+		t.Fatalf("Error marshaling message: %s", err)
 	}
 }

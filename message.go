@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"reflect"
 	"strings"
 
@@ -20,14 +19,14 @@ type Message struct {
 }
 
 // NewMessage returns a new message with the v byte value
-func NewMessage(v []byte) *Message {
+func NewMessage(v []byte) (*Message, error) {
 	var utf8V []byte
 	if len(v) != 0 {
 		reader, err := charset.NewReader(bytes.NewReader(v), "text/plain")
 		if err != nil {
-			return nil
+			return nil, err
 		}
-		utf8V, err = ioutil.ReadAll(reader)
+		utf8V, err = io.ReadAll(reader)
 	} else {
 		utf8V = v
 	}
@@ -36,9 +35,9 @@ func NewMessage(v []byte) *Message {
 		Delimeters: *NewDelimeters(),
 	}
 	if err := newMessage.parse(); err != nil {
-		log.Fatal(fmt.Sprintf("Parse Error: %+v", err))
+		return nil, err
 	}
-	return newMessage
+	return newMessage, nil
 }
 
 func (m *Message) String() string {
