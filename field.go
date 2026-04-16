@@ -2,8 +2,9 @@ package golevel7
 
 import (
 	"fmt"
-	"github.com/twopt/golevel7/commons"
 	"strings"
+
+	"github.com/twopt/golevel7/commons"
 )
 
 // Field is an HL7 field
@@ -41,18 +42,27 @@ func (f *Field) parse(seps *Delimeters) error {
 		case ch == eof || (ch == endMsg && seps.LFTermMsg):
 			if ii > i {
 				cmp := Component{Value: f.Value[i : ii-1]}
-				cmp.parse(seps)
+				err := cmp.parse(seps)
+				if err != nil {
+					return err
+				}
 				f.Components = append(f.Components, cmp)
 			}
 			return nil
 		case ch == seps.Component:
 			cmp := Component{Value: f.Value[i : ii-1]}
-			cmp.parse(seps)
+			err := cmp.parse(seps)
+			if err != nil {
+				return err
+			}
 			f.Components = append(f.Components, cmp)
 			i = ii
 		case ch == seps.Escape:
 			ii++
-			r.ReadRune()
+			_, _, err := r.ReadRune()
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
