@@ -1,0 +1,110 @@
+version: "2"
+run:
+  go: '1.26.1'
+  tests: false
+linters-settings:
+  cyclop:
+    max-complexity: 11
+  depguard:
+    rules:
+      prevent_unmaintained_packages:
+        list-mode: lax # allow unless explicitly denied
+        files:
+          - $all
+          - "!$test"
+        deny: # add unmaintained packages to the deny list
+          - pkg: io/ioutil
+            desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
+  dupl:
+    threshold: 100
+  errcheck:
+    check-type-assertions: true
+    exclude-functions:
+      - '(*database/sql.Tx).Rollback'
+  exhaustive:
+    default-signifies-exhaustive: true
+  exhaustruct: # add package names with excessively large structs to the deny list
+    exclude:
+      - 'url'  
+      - 'pem'  
+      - 'mapstructure'
+      - 'github.com/spf13/cobra.Command$'
+  funlen:
+    lines: 100
+    statements: 50
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/twopt/go835Convert)
+      - blank
+    skip-generated: true
+    custom-order: true
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+    disabled-checks:
+      # this directly conflicts with nonamedreturns linter
+      - unnamedResult
+  gocyclo:
+    min-complexity: 10
+  gofmt:
+    simplify: true
+  gofumpt:
+    extra-rules: false
+    module-path: github.com/twopt/go835Convert
+  goimports:
+    local-prefixes: github.com/twopt/go835Convert
+  mnd:
+    ignored-numbers:
+      - '0o755'
+      - '0o644'
+  govet:
+    shadow: true
+  lll:
+    line-length: 160
+  misspell:
+    locale: US
+  nolintlint:
+    allow-leading-space: false # require machine-readable nolint directives (with no leading space)
+    allow-unused: false # report any unused nolint directives
+    require-explanation: true # require an explanation for nolint directives
+    require-specific: true # require nolint directives to be specific about which linter is being skipped  
+  revive:
+    confidence: 0
+  tagliatelle:
+    case:
+      rules:
+        yaml: kebab
+        json: kebab
+  wrapcheck:
+    ignorePackageGlobs:
+      - '*io*'
+  varnamelen:
+    max-distance: 7
+    ignore-names:
+      - 'tx'
+      - 'id'
+      - 'v'
+      - 'wg'
+      - 'ok'
+
+linters:
+  enable-all: true
+  disable:
+    # NOTE: We are not using debug statements, just a progress bar that uses Printf
+    - forbidigo
+    # This seems to directly conflict with the er113 linter
+    - wrapcheck
+
+
+issues:
+  # enable issues excluded by default 
+  exclude-use-default: false
+  exclude-rules:
+    - path: cmd/(.+).go
+      text: "don't use `init` function"
+    - path: cmd/(.+).go
+      text: "\\w+ is a global variable"
