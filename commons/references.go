@@ -1,13 +1,13 @@
 package commons
 
 var FieldNames = map[string][]string{
-	"DGI": []string{
+	"DGI": {
 		"DGI Record",
 		"Set ID",
 		"Diagnosis Codeing Method",
 		"Diagnosis Code",
 	},
-	"MSH": []string{
+	"MSH": {
 		"MSH Record",
 		"Field Separator",
 		"Encoding Characters",
@@ -31,14 +31,14 @@ var FieldNames = map[string][]string{
 		"Alternate Character Set Handling Scheme",
 		"Conformance Statement ID",
 	},
-	"NTE": []string{
+	"NTE": {
 		"NTE Record",
 		"Set ID",
 		"Source of Comment",
 		"Comment",
 		"Comment Type",
 	},
-	"ORC": []string{
+	"ORC": {
 		"ORC Record",
 		"Order Control",
 		"Placer Order Number",
@@ -65,7 +65,7 @@ var FieldNames = map[string][]string{
 		"Ordering Facility Phone Number",
 		"Ordering Provider Address",
 	},
-	"PID": []string{
+	"PID": {
 		"PID Record",
 		"Set ID",
 		"Patient ID",
@@ -98,7 +98,7 @@ var FieldNames = map[string][]string{
 		"Patient Death Date and Time",
 		"Patient Death Indicator",
 	},
-	"RXE": []string{
+	"RXE": {
 		"RXE Record",
 		"Quantity/Timing",
 		"Give Code",
@@ -141,7 +141,7 @@ var FieldNames = map[string][]string{
 		"Initial Dispense Amount",
 		"Dispensing Pharmacy",
 	},
-	"RXR": []string{
+	"RXR": {
 		"RXR Record",
 		"Route",
 		"Site",
@@ -149,7 +149,7 @@ var FieldNames = map[string][]string{
 		"Administration method",
 		"Routing Instructions",
 	},
-	"TQ1": []string{
+	"TQ1": {
 		"TQ1 Record",
 		"Set ID",
 		"Quantity",
@@ -166,7 +166,7 @@ var FieldNames = map[string][]string{
 		"Occurrence Duration",
 		"Total Occurrences",
 	},
-	"ZWA": []string{
+	"ZWA": {
 		"ZWA Record",
 		"unused",
 		"First Filled Date",
@@ -185,7 +185,7 @@ var FieldNames = map[string][]string{
 		"unused",
 		"Prescription Serial Number",
 	},
-	"2PT": []string{
+	"2PT": {
 		"2PT Record",
 		"Legacy Refills Total",
 		"Legacy Qty Remaining",

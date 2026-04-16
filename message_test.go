@@ -1,9 +1,10 @@
 package golevel7
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
-	"io/ioutil"
+
 	"golang.org/x/net/html/charset"
 )
 
@@ -14,7 +15,7 @@ func readFile(fname string) ([]byte, error) {
 	}
 	defer file.Close()
 
-	reader, err := charset.NewReader(file,"text/plain")
+	reader, err := charset.NewReader(file, "text/plain")
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func TestMessage(t *testing.T) {
 	}
 
 	msg := &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +48,7 @@ func TestMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg = &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Error(err)
 	}
@@ -60,7 +61,7 @@ func TestMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg = &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Error(err)
 	}
@@ -73,7 +74,7 @@ func TestMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg = &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Error(err)
 	}

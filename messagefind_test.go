@@ -9,7 +9,7 @@ func TestFind(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestFindAll(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func TestRepFields(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &Message{Value: []rune(string(data))}
-	msg.parse()
+	err = msg.parse()
 	if err != nil {
 		t.Fatal(err)
 	}
