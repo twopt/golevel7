@@ -29,7 +29,7 @@ func (e *Encoder) Encode(it interface{}) error {
 		return err
 	}
 	if i < len(b) {
-		return errors.New("Failed to write all bytes")
+		return errors.New("failed to write all bytes")
 	}
 	return nil
 }
@@ -38,7 +38,10 @@ func (e *Encoder) Encode(it interface{}) error {
 // It will panic if interface{} is not a pointer to a struct
 func Marshal(m *Message, it interface{}) ([]byte, error) {
 	seg := Segment{Value: []rune("MSH" + string(m.Delimeters.Field) + m.Delimeters.DelimeterField)}
-	seg.parse(&m.Delimeters)
+	err := seg.parse(&m.Delimeters)
+	if err != nil {
+		return nil, err
+	}
 	m.Segments = append(m.Segments, seg)
 	st := reflect.ValueOf(it).Elem()
 	stt := st.Type()

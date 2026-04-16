@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"reflect"
 	"strings"
 
@@ -20,14 +19,17 @@ type Message struct {
 }
 
 // NewMessage returns a new message with the v byte value
-func NewMessage(v []byte) *Message {
+func NewMessage(v []byte) (*Message, error) {
 	var utf8V []byte
 	if len(v) != 0 {
 		reader, err := charset.NewReader(bytes.NewReader(v), "text/plain")
 		if err != nil {
-			return nil
+			return nil, err
 		}
-		utf8V, err = ioutil.ReadAll(reader)
+		utf8V, err = io.ReadAll(reader)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		utf8V = v
 	}
@@ -36,9 +38,9 @@ func NewMessage(v []byte) *Message {
 		Delimeters: *NewDelimeters(),
 	}
 	if err := newMessage.parse(); err != nil {
-		log.Fatal(fmt.Sprintf("Parse Error: %+v", err))
+		return nil, fmt.Errorf("parse error: %w", err)
 	}
-	return newMessage
+	return newMessage, nil
 }
 
 func (m *Message) String() string {
@@ -138,10 +140,16 @@ func (m *Message) Set(l *Location, val string) error {
 	if err != nil {
 		s := Segment{}
 		s.forceField([]rune(l.Segment), 0)
-		s.Set(l, val, &m.Delimeters)
+		err := s.Set(l, val, &m.Delimeters)
+		if err != nil {
+			return err
+		}
 		m.Segments = append(m.Segments, s)
 	} else {
-		seg.Set(l, val, &m.Delimeters)
+		err := seg.Set(l, val, &m.Delimeters)
+		if err != nil {
+			return err
+		}
 	}
 	m.Value = m.encode()
 	return nil
@@ -168,35 +176,44 @@ func (m *Message) parse() error {
 			v := m.Value[i:safeii]
 			if len(v) > 4 { // seg name + field sep
 				seg := Segment{Value: v}
-				seg.parse(&m.Delimeters)
+				err := seg.parse(&m.Delimeters)
+				if err != nil {
+					return err
+				}
 				m.Segments = append(m.Segments, seg)
 			}
 			return nil
 		case ch == segTerm:
 			seg := Segment{Value: m.Value[i : ii-1]}
-			seg.parse(&m.Delimeters)
+			err := seg.parse(&m.Delimeters)
+			if err != nil {
+				return err
+			}
 			m.Segments = append(m.Segments, seg)
 			i = ii
 		case ch == m.Delimeters.Escape:
 			ii++
-			r.ReadRune()
+			_, _, err := r.ReadRune()
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
 
 func (m *Message) parseSep() error {
 	if len(m.Value) < 8 {
-		return errors.New("Invalid message length less than 8 bytes")
+		return errors.New("invalid message length less than 8 bytes")
 	}
 	if string(m.Value[:3]) != "MSH" {
-		return fmt.Errorf("Invalid message: Missing MSH segment -> %v", m.Value[:3])
+		return fmt.Errorf("invalid message: Missing MSH segment -> %v", m.Value[:3])
 	}
 
 	r := bytes.NewReader([]byte(string(m.Value)))
 	for i := 0; i < 8; i++ {
 		ch, _, _ := r.ReadRune()
 		if ch == eof {
-			return fmt.Errorf("Invalid message: eof while parsing MSH")
+			return fmt.Errorf("invalid message: eof while parsing MSH")
 		}
 		switch i {
 		case 3:
@@ -272,13 +289,6 @@ func (m *Message) Unmarshal(it interface{}) error {
 	}
 
 	return nil
-}
-
-// Info returns the MsgInfo for the message
-func (m *Message) Info() (MsgInfo, error) {
-	mi := MsgInfo{}
-	err := m.Unmarshal(&mi)
-	return mi, err
 }
 
 func (m *Message) ScanSegments() bool {

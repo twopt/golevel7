@@ -2,8 +2,9 @@ package golevel7
 
 import (
 	"bufio"
-	"github.com/twopt/golevel7/commons"
 	"io"
+
+	"github.com/twopt/golevel7/commons"
 )
 
 type MessageScanner struct {
@@ -26,14 +27,14 @@ func NewMessageScanner(r io.Reader) *MessageScanner {
 func (ms *MessageScanner) Scan() (gotOne bool) {
 	if scan := ms.b.Scan(); scan {
 		if ms.err = ms.b.Err(); ms.err != nil || len(ms.b.Bytes()) < 5 {
-			if ms.b.Bytes() != nil && !(len(ms.b.Bytes()) < 5) {
+			if ms.b.Bytes() != nil && (len(ms.b.Bytes()) >= 5) {
 				gotOne = true
 			}
 		} else {
 			gotOne = true
 		}
 		if gotOne {
-			ms.thisMsg = NewMessage(ms.b.Bytes())
+			ms.thisMsg, _ = NewMessage(ms.b.Bytes())
 		} else {
 			ms.thisMsg = nil
 		}

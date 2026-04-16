@@ -51,7 +51,7 @@ func (s *Segment) isMSH() bool {
 
 func (s *Segment) parse(seps *Delimeters) error {
 	if len(s.Value) < 3 {
-		return fmt.Errorf("Invalid segment. Length %v", len(s.Value))
+		return fmt.Errorf("invalid segment. Length %v", len(s.Value))
 	}
 	isMSH := s.isMSH()
 
@@ -67,7 +67,10 @@ func (s *Segment) parse(seps *Delimeters) error {
 		case ch == eof || (ch == endMsg && seps.LFTermMsg):
 			if ii > i {
 				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
-				fld.parse(seps)
+				err := fld.parse(seps)
+				if err != nil {
+					return err
+				}
 				s.Fields = append(s.Fields, fld)
 			}
 			return nil
@@ -81,7 +84,10 @@ func (s *Segment) parse(seps *Delimeters) error {
 				s.forceField(s.Value[i:ii-1], seq)
 			} else {
 				fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
-				fld.parse(seps)
+				err := fld.parse(seps)
+				if err != nil {
+					return err
+				}
 				s.Fields = append(s.Fields, fld)
 			}
 			i = ii
@@ -93,12 +99,18 @@ func (s *Segment) parse(seps *Delimeters) error {
 			}
 		case ch == seps.Repetition:
 			fld := Field{Value: s.Value[i : ii-1], SeqNum: seq, SegName: segName}
-			fld.parse(seps)
+			err := fld.parse(seps)
+			if err != nil {
+				return err
+			}
 			s.Fields = append(s.Fields, fld)
 			i = ii
 		case ch == seps.Escape:
 			ii++
-			r.ReadRune()
+			_, _, err := r.ReadRune()
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
