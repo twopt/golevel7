@@ -38,7 +38,7 @@ func NewMessage(v []byte) (*Message, error) {
 		Delimeters: *NewDelimeters(),
 	}
 	if err := newMessage.parse(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse error: %w", err)
 	}
 	return newMessage, nil
 }
